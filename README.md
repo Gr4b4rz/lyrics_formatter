@@ -1,7 +1,7 @@
 # Lyrics formatter
 
 Lyrics formatter.
-This program uses input lyrics files to creates files that can be imported to OrionGT controller.
+This program uses input lyrics files to create files that can be imported to OrionGT controller.
 
 <table>
 <tr>
@@ -218,7 +218,12 @@ It expects input song to be in format presented below. Verse means here both ver
 
 ## Usage
 ```
-python3 format_lyrics.py songs/skosztujcie_i_zobaczcie.txt "Skosztujcie i zobaczcie" --output_file 05.TXT
+python3 format_lyrics.py "Skosztujcie i zobaczcie" --input_file songs/skosztujcie_i_zobaczcie.txt --output_file 05.TXT
+```
+
+Or to check if song is in data file
+```
+python3 format_lyrics.py "Bóg nad swym ludem" --check VISOR.DAT
 ```
 
 More in `python3 format_lyrics.py --help`

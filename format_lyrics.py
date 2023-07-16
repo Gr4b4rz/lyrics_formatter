@@ -42,13 +42,19 @@ class SongTooLongError(Exception):
     "Raised when there are too many verses in a song for the OrionGT controller"
 
 
+class LyricsFileNotProvidedError(Exception):
+    "Raised when input file with lyrics was not provided"
+
+
 def parse_args():
     "Parse arguments passed by cli"
     parser = argparse.ArgumentParser(prog="Lyrics formatter",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("input_file", action="store", type=str, help="Input filename")
+    parser.add_argument("--input_file", action="store", type=str, help="Input filename")
     parser.add_argument("title", action="store", type=str, help="Song title")
     parser.add_argument("--output_file", action="store", type=str, help="Input filename")
+    parser.add_argument("--check", action="store", type=str, help="Check if song is already "
+                        "in SD card. Provide file with controller memory")
 
     args = parser.parse_args()
     return args
@@ -94,9 +100,27 @@ def get_verses(lyrics) -> list[list[str]]:
     return verses
 
 
+def check_if_already_added(data_file: str, title: str) -> bool:
+    "Check naively if title is in data file. It doesn't check song lyrics!"
+    with open(data_file, mode="r", encoding="cp1250") as file:
+        data = file.read().lower()
+    return title.lower().strip() in data
+
+
 def main():
     "Main Lyrics Formatter function"
     arguments = parse_args()
+    if arguments.check:
+        is_in_memory = check_if_already_added(arguments.check, arguments.title)
+        if is_in_memory:
+            print("Title has been found in the data file")
+        else:
+            print("Title has not been found in the data file")
+        return is_in_memory
+
+    if not arguments.input_file:
+        raise LyricsFileNotProvidedError("Input file with lyrics was not provided")
+
     with open(arguments.input_file, mode="r", encoding="utf-8") as file:
         lyrics = file.read().splitlines()
 
@@ -120,7 +144,7 @@ def main():
     with open(filename, mode="w", encoding="cp1250") as file:
         file.write(output)
 
-    print(f"Converted {arguments.title} and saved in {filename}")
+    print(f'Converted "{arguments.title}" and saved in {filename}')
 
 
 if __name__ == '__main__':
